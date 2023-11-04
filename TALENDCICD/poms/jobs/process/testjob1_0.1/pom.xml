@@ -19,10 +19,10 @@
     <talend.job.folder></talend.job.folder>
     <talend.job.context>Default</talend.job.context>
     <talend.job.path>talendcicd</talend.job.path>
-    <talend.job.git.commit.id></talend.job.git.commit.id>
+    <talend.job.git.commit.id>64a1f62608d7229b4eb233c6564e124f79795528</talend.job.git.commit.id>
     <project.distribution-management.repository.id>${project.distributionManagement.repository.id}</project.distribution-management.repository.id>
     <talend.job.stat>true</talend.job.stat>
-    <talend.job.git.author></talend.job.git.author>
+    <talend.job.git.author>strangerdatum@gmail.com</talend.job.git.author>
     <talend.job.jvmargs>-Xms256M -Xmx1024M -Dfile.encoding=UTF-8 </talend.job.jvmargs>
     <talend.job.id>_EYFPYHs-Ee6-Idqlc2Jk-w</talend.job.id>
     <talend.job.version>0.1</talend.job.version>
@@ -39,7 +39,7 @@
     <talend.product.version>8.0.1.20230913_0925-patch</talend.product.version>
     <talend.project.name>TALENDCICD</talend.project.name>
     <current.test.resources.dir>${basedir}/src/test/resources</current.test.resources.dir>
-    <talend.job.git.commit.date></talend.job.git.commit.date>
+    <talend.job.git.commit.date>1699121888000</talend.job.git.commit.date>
     <project.distribution-management.repository.url>${project.distributionManagement.repository.url}</project.distribution-management.repository.url>
     <current.bundle.resources.dir>${basedir}/src/main/bundle-resources</current.bundle.resources.dir>
     <talend.job.name>testjob1</talend.job.name>
@@ -47,9 +47,64 @@
   </properties>
   <dependencies>
     <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>accessors-smart</artifactId>
+      <version>2.4.11</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.talend.libraries</groupId>
       <artifactId>antlr-runtime-3.5.2</artifactId>
       <version>6.0.0</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.ow2.asm</groupId>
+      <artifactId>asm</artifactId>
+      <version>9.5</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.talend.daikon</groupId>
+      <artifactId>audit-common</artifactId>
+      <version>1.16.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.talend.daikon</groupId>
+      <artifactId>audit-log4j2</artifactId>
+      <version>1.16.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>3.10</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
@@ -91,6 +146,28 @@
       </exclusions>
     </dependency>
     <dependency>
+      <groupId>org.talend.components.lib</groupId>
+      <artifactId>job-audit</artifactId>
+      <version>1.5</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>net.minidev</groupId>
+      <artifactId>json-smart</artifactId>
+      <version>2.4.11</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-api</artifactId>
       <version>2.17.1</version>
@@ -116,6 +193,17 @@
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
       <version>2.17.1</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>*</artifactId>
+          <groupId>*</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.talend.daikon</groupId>
+      <artifactId>logging-event-layout</artifactId>
+      <version>1.16.1</version>
       <exclusions>
         <exclusion>
           <artifactId>*</artifactId>
