@@ -1,0 +1,108 @@
+# Talend CI/CD on Azure DevOps
+# Build Pipeline for building and publishing on Talend Cloud Management Console
+
+#trigger:
+  #branches:
+    #include:
+    #- 'main'
+
+pool: #Default
+ vmImage: 'ubuntu-latest'
+ #vmImage: 'windows-2022'
+
+variables:
+- group: Talend-Cloud-Variables
+#Variable corresponding to the ci builder version you want to use to build.
+- name: builder-maven-version
+  value: 8.0.12
+#Variable corresponding to the Talend project name.
+- name: project_name
+  value: 'TALENDCICD'
+- name: environment
+  value: 'Dev'
+#Variable corresponding to the specific artifact you want to build. Define it as a variable in the GUI so it can be overwritten at runtime. If you don't use it, all existing artifacts in your project will be executed and published.
+#- name: jobs_to_build
+#  value: 'jobs/process/job1_0.1'
+
+- name: talend_ci_config
+  value: >-
+    -Djob.signature.verifying=true
+    -Dlicense.path=$(license.secureFilePath)
+    -Dtalend.studio.p2.base=$(p2_base_url)
+    -Dtalend.studio.p2.update=$(p2_update_url)
+    -Pcloud-publisher
+    -Dservice.url=$(talend_cloud_url)
+    -Dcloud.token=$(talend_cloud_token)
+    -Dcloud.publisher.screenshot=true
+    -Dcloud.publisher.environment=$(environment)
+    -Dcloud.publisher.workspace=talencicd
+    
+ #-Dstudio.encryption.keys.file=$(studio_keys.secureFilePath)
+
+steps:
+  - task: DownloadSecureFile@1
+    name: settings_xml
+    inputs:
+      secureFile: maven_settings.xml
+
+  - task: DownloadSecureFile@1
+    name: license
+    inputs:
+      secureFile: license
+
+  - task: DownloadSecureFile@1
+    name: pom_xml
+    inputs:
+      secureFile: sample_pom.xml      
+  #- task: DownloadSecureFile@1
+    #name: studio_keys
+    #inputs:
+      #secureFile: studio.keys
+  - task: CmdLine@2
+    displayName: 'Download builder-maven plugins'
+    inputs:
+      script: |
+        mkdir /home/vsts/work/_temp/builder-maven/
+        cd /home/vsts/work/_temp/builder-maven/
+        wget -r -np -nd https://talend-update.talend.com/nexus/content/repositories/libraries/org/talend/ci/builder-maven-plugin/$(builder-maven-version)/
+        ls -la
+
+  - task: Maven@3
+    displayName: 'Maven install builder plugin'
+    inputs:
+      mavenPomFile: '$(pom_xml.secureFilePath)'
+      goals: 'install:install-file'
+      options: '--batch-mode --settings $(settings_xml.secureFilePath) '
+      mavenOptions: |
+        -Dfile=/home/vsts/work/_temp/builder-maven/builder-maven-plugin-$(builder-maven-version).jar
+        -DpomFile=/home/vsts/work/_temp/builder-maven/builder-maven-plugin-$(builder-maven-version).pom
+
+  - task: Maven@3
+    displayName: 'Maven install P2 and generate POMs'
+    inputs:
+      mavenPomFile: '$(pom_xml.secureFilePath)'
+      goals: 'org.talend.ci:builder-maven-plugin:$(builder-maven-version):generateAllPoms -X'
+      options: '--batch-mode --settings $(settings_xml.secureFilePath) $(talend_ci_config)'
+      publishJUnitResults: false
+      
+  - task: CmdLine@2
+    displayName: 'List the modules / available jobs to be built'
+    inputs:
+      script: |
+        pwd
+        ls -la
+        cat $(project_name)/poms/pom.xml | sed '/<modules>/,/<\/modules>/!d'
+        echo "------------ CI Builder Log -----------"
+        cat ci-builder.log
+        echo "------------ Status Log -----------"
+        cat status.log   
+    
+
+  - task: Maven@3
+    displayName: 'Maven build & publish Talend artifacts to Talend Cloud'
+    inputs:
+        mavenPomFile: '$(project_name)/poms/pom.xml'
+        goals: 'deploy' #compile / deploy
+        options: '--batch-mode --settings $(settings_xml.secureFilePath) -pl $(jobs_to_build) -am -fae $(talend_ci_config)'
+        
+  
